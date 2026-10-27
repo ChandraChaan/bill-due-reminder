@@ -188,6 +188,47 @@ void main() {
     });
   });
 
+  group('paid by SMS', () {
+    final payment = sms(
+      'VK-BESCOM',
+      '2026-10-28 18:00',
+      'BESCOM: Payment of Rs.1,436.00 for Account ID 7812345678 received. '
+          'Thank you.',
+    );
+
+    test('a payment SMS marks the bill paid and stops its reminders', () async {
+      now = DateTime(2026, 10, 28, 18, 5);
+      final data = await service().commit(
+        ingestMessages(AppData.empty().copyWith(readSms: true), [
+          electricity,
+        ]).data,
+      );
+      expect(reminders.scheduled, isNotEmpty);
+      smsSource.arrived = [payment];
+      final result = await service().handleArrived(data);
+      expect(result.paidBills.single.name, 'BESCOM');
+      expect(result.data.book.bills.single.paidBy, PaidBy.sms);
+      expect(reminders.scheduled, isEmpty);
+      expect(reminders.announcedPaid.single.name, 'BESCOM');
+      expect(reminders.announced, isEmpty);
+    });
+
+    test('bill and payment in one inbox scan end up paid', () async {
+      smsSource.inbox = [payment, electricity];
+      final result = await service().scanInbox(
+        AppData.empty().copyWith(readSms: true),
+      );
+      expect(result.data.book.bills.single.isPaid, isTrue);
+      expect(result.paidBills, hasLength(1));
+    });
+
+    test('a payment with no matching bill changes nothing', () {
+      final result = ingestMessages(AppData.empty(), [payment]);
+      expect(result.data.book.bills, isEmpty);
+      expect(result.paidBills, isEmpty);
+    });
+  });
+
   test('parsed amounts are whole paise', () {
     final bill = ingestMessages(AppData.empty(), [
       statement,

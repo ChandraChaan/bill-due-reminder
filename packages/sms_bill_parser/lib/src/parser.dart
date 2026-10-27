@@ -78,6 +78,12 @@ final RegExp _otherAmountBefore = _re(
   r'[^.]{0,20}$',
 );
 
+/// In a payment SMS, amounts that are not what was paid.
+final RegExp _notPaidAmountBefore = _re(
+  r'\b(?:limit|avl|available|avbl|bal(?:ance)?|outstanding|due|next)\b'
+  r'[^.]{0,20}$',
+);
+
 final List<(RegExp, BillKind)> _kindPatterns = [
   (
     _re(r'credit\s*card|\bcc\b|card\s*(?:statement|stmt|a/c|ending|x+\d|no\b)'),
@@ -97,7 +103,8 @@ final List<(RegExp, BillKind)> _kindPatterns = [
   ),
   (
     _re(
-      r'post[\s-]?paid|mobile bill|bill for (?:your )?(?:mobile|number|airtel|jio|vi)',
+      r'post[\s-]?paid|mobile bill|bill for (?:your )?(?:mobile|number|airtel|jio|vi)|'
+      r'\bbill\b.{0,40}?\b[6-9][\dx*]{7}\d{2}\b',
     ),
     BillKind.mobilePostpaid,
   ),
@@ -126,12 +133,24 @@ final class BillSmsParser {
     if (_promotion.hasMatch(body)) {
       return const IgnoredSms(IgnoreReason.promotion);
     }
-    if (_paymentConfirmation.hasMatch(body.replaceAll(_ignoreIfClause, ''))) {
-      return const IgnoredSms(IgnoreReason.paymentConfirmation);
-    }
-
     final sender = resolveSender(senderId, body);
     final kind = _kind(body, sender.kindHint);
+
+    if (_paymentConfirmation.hasMatch(body.replaceAll(_ignoreIfClause, ''))) {
+      // Money in or out with no bill attached ("Rs 500 received from...")
+      // is not a bill payment.
+      if (kind == null) {
+        return const IgnoredSms(IgnoreReason.paymentConfirmation);
+      }
+      return PaymentNotice(
+        kind: kind,
+        issuer: sender.issuer,
+        accountRef: findAccountRef(body),
+        amount: _paidAmount(body),
+        receivedAt: sms.receivedAt,
+      );
+    }
+
     if (kind == null || !_dueSignal.hasMatch(body)) {
       return const IgnoredSms(IgnoreReason.notABill);
     }
@@ -188,6 +207,19 @@ final class BillSmsParser {
       return !_notDueBefore.hasMatch(before);
     }).toList();
     return rest.length == 1 ? rest.single.date : null;
+  }
+
+  /// The first amount that isn't a balance, limit or next due amount.
+  int? _paidAmount(String body) {
+    for (final amount in findAmounts(body)) {
+      final before = body.substring(
+        amount.start < 40 ? 0 : amount.start - 40,
+        amount.start,
+      );
+      if (_notPaidAmountBefore.hasMatch(before)) continue;
+      return amount.paise;
+    }
+    return null;
   }
 
   (int?, int?) _amounts(String body) {

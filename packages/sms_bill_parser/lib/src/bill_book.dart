@@ -205,6 +205,13 @@ String billIdFor(BillNotice notice) =>
 /// most this many days apart.
 const int sameBillToleranceDays = 2;
 
+/// A payment SMS can arrive a little before the bill's first SMS (a
+/// "due tomorrow" reminder sent after you paid early) ...
+const int paymentLookbackDays = 5;
+
+/// ... and up to this many days after the due date (paid late).
+const int paymentLateDays = 30;
+
 /// Whether two account refs can be the same account: equal, either unknown,
 /// or one is the tail of the other (`10` and `4310`).
 bool refsCompatible(String? a, String? b) {
@@ -275,6 +282,45 @@ final class BillBook {
       noticeCount: existing.noticeCount + 1,
     );
     return _replace(merged);
+  }
+
+  /// The unpaid bill [payment] pays, if any: same issuer and kind, account
+  /// numbers that agree, first seen at most [paymentLookbackDays] before the
+  /// payment, and an amount of at least the minimum due (or, with no
+  /// minimum, the total less ₹1 for rounding). When several match, the one
+  /// due soonest wins.
+  TrackedBill? findPaidBill(PaymentNotice payment) {
+    final paidOn = CalendarDate.fromDateTime(payment.receivedAt);
+    TrackedBill? best;
+    for (final bill in bills) {
+      if (bill.isPaid ||
+          bill.source != BillSource.sms ||
+          bill.kind != payment.kind ||
+          bill.issuerId != payment.issuer.id ||
+          !refsCompatible(bill.accountRef, payment.accountRef)) {
+        continue;
+      }
+      final firstSeen = CalendarDate.fromDateTime(bill.firstSeenAt.toLocal());
+      if (paidOn.daysUntil(firstSeen) > paymentLookbackDays) continue;
+      if (bill.dueDate.daysUntil(paidOn) > paymentLateDays) continue;
+      if (!_coversBill(payment.amount, bill)) continue;
+      if (best == null || bill.dueDate.isBefore(best.dueDate)) best = bill;
+    }
+    return best;
+  }
+
+  /// Marks the bill [payment] pays as paid by SMS. Returns the same book
+  /// when no unpaid bill matches.
+  BillBook applyPayment(PaymentNotice payment) {
+    final bill = findPaidBill(payment);
+    if (bill == null) return this;
+    return markPaid(bill.id, payment.receivedAt, by: PaidBy.sms);
+  }
+
+  static bool _coversBill(int? paid, TrackedBill bill) {
+    if (paid == null || bill.amountDue == null) return true;
+    final needed = bill.minimumDue ?? bill.amountDue! - 100;
+    return paid >= needed;
   }
 
   /// Adds or replaces a typed-in or edited bill.

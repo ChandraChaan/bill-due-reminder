@@ -3,6 +3,7 @@ import 'package:test/test.dart';
 
 import 'corpus/bill_corpus.dart';
 import 'corpus/holdout_corpus.dart';
+import 'corpus/payment_corpus.dart';
 
 int? _paise(double? rupees) => rupees == null ? null : (rupees * 100).round();
 
@@ -33,13 +34,33 @@ void main() {
   });
 
   group('not bills', () {
-    for (final (i, c) in [...ignoredCorpus, ...holdoutIgnored].indexed) {
+    for (final (i, c) in [
+      ...ignoredCorpus,
+      ...holdoutIgnored,
+      ...notPaymentCorpus,
+    ].indexed) {
       test('#$i ${c.sender} ${c.reason.name}', () {
         final result = parser.parse(
           SmsInput(sender: c.sender, body: c.body, receivedAt: c.receivedAt),
         );
         expect(result, isA<IgnoredSms>(), reason: '$result\n${c.body}');
         expect((result as IgnoredSms).reason, c.reason);
+      });
+    }
+  });
+
+  group('payments', () {
+    for (final (i, c) in paymentCorpus.indexed) {
+      test('#$i ${c.sender} ${c.kind.name}', () {
+        final result = parser.parse(
+          SmsInput(sender: c.sender, body: c.body, receivedAt: c.receivedAt),
+        );
+        expect(result, isA<PaymentNotice>(), reason: '$result\n${c.body}');
+        final payment = result as PaymentNotice;
+        expect(payment.kind, c.kind, reason: 'kind');
+        expect(payment.issuer.id, c.issuer, reason: 'issuer');
+        expect(payment.accountRef, c.ref, reason: 'account ref');
+        expect(payment.amount, _paise(c.amount), reason: 'amount');
       });
     }
   });

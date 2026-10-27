@@ -20,8 +20,10 @@ final class LocalReminderScheduler implements ReminderScheduler {
   static const String _dueChannel = 'due_reminders';
   static const String _newChannel = 'new_bills';
 
-  /// Id range for "new bill" notifications, apart from reminder ids.
+  /// Id ranges for "new bill" and "paid" notifications, apart from
+  /// reminder ids (which start at 1000).
   static const int _newBillId = 1;
+  static const int _paidId = 500;
 
   AppLocalizations get _l10n => lookupAppLocalizations(const Locale('en'));
 
@@ -107,6 +109,27 @@ final class LocalReminderScheduler implements ReminderScheduler {
           bill.amountDue == null ? '' : formatRupees(bill.amountDue!),
           formatDay(bill.dueDate, today),
         ),
+        notificationDetails: details,
+        payload: bill.id,
+      );
+    }
+  }
+
+  @override
+  Future<void> announcePaid(List<TrackedBill> bills) async {
+    final l10n = _l10n;
+    final details = NotificationDetails(
+      android: AndroidNotificationDetails(
+        _newChannel,
+        l10n.notifNewChannelName,
+        channelDescription: l10n.notifNewChannelDescription,
+      ),
+    );
+    for (final (i, bill) in bills.indexed) {
+      await _plugin.show(
+        id: _paidId + i,
+        title: l10n.notifPaidTitle(bill.name),
+        body: l10n.notifPaidBody(kindLabel(l10n, bill.kind)),
         notificationDetails: details,
         payload: bill.id,
       );

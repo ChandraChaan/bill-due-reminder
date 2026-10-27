@@ -6,13 +6,40 @@
   "addBillTooltip": "Add a bill",
   "addBill": "Add bill",
   "monthSummaryTitle": "Due in {month}",
-  "@monthSummaryTitle": {"placeholders": {"month": {"type": "String"}}},
+  "@monthSummaryTitle": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
   "monthSummaryPaid": "{amount} already paid",
-  "@monthSummaryPaid": {"placeholders": {"amount": {"type": "String"}}},
+  "@monthSummaryPaid": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "monthSummaryCount": "{count, plural, =0{No bills left} =1{1 bill left} other{{count} bills left}}",
-  "@monthSummaryCount": {"placeholders": {"count": {"type": "int"}}},
+  "@monthSummaryCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "overdueSummary": "{count, plural, =1{1 overdue bill} other{{count} overdue bills}}: {amount}",
-  "@overdueSummary": {"placeholders": {"count": {"type": "int"}, "amount": {"type": "String"}}},
+  "@overdueSummary": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "sectionOverdue": "Overdue",
   "sectionUpcoming": "Coming up",
   "sectionLater": "Later",
@@ -20,17 +47,47 @@
   "dueToday": "Due today",
   "dueTomorrow": "Due tomorrow",
   "dueInDays": "Due in {days} days",
-  "@dueInDays": {"placeholders": {"days": {"type": "int"}}},
+  "@dueInDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
   "overdueByDays": "{days, plural, =1{1 day overdue} other{{days} days overdue}}",
-  "@overdueByDays": {"placeholders": {"days": {"type": "int"}}},
+  "@overdueByDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
   "paidOn": "Paid {date}",
-  "@paidOn": {"placeholders": {"date": {"type": "String"}}},
+  "@paidOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "paidFromSms": "Paid · from SMS",
   "amountUnknown": "Amount not in SMS",
   "minimumDue": "Min. due {amount}",
-  "@minimumDue": {"placeholders": {"amount": {"type": "String"}}},
+  "@minimumDue": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "accountEnding": "•• {ref}",
-  "@accountEnding": {"placeholders": {"ref": {"type": "String"}}},
+  "@accountEnding": {
+    "placeholders": {
+      "ref": {
+        "type": "String"
+      }
+    }
+  },
   "emptyTitle": "No bills yet",
   "emptyBodySms": "New bill SMS from your bank, card, electricity board or telco will show up here with a reminder before the due date.",
   "emptyBodyManual": "Add your bills and DueDay will remind you before each due date. Turn on SMS reading in Settings to add them automatically.",
@@ -55,11 +112,23 @@
   "billMarkedPaid": "Marked as paid",
   "undo": "Undo",
   "billSourceSms": "Found in {count, plural, =1{1 SMS} other{{count} SMS}}",
-  "@billSourceSms": {"placeholders": {"count": {"type": "int"}}},
+  "@billSourceSms": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "billSourceManual": "Added by you",
   "billRepeats": "Repeats monthly",
   "dueOn": "Due {date}",
-  "@dueOn": {"placeholders": {"date": {"type": "String"}}},
+  "@dueOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "formTitleAdd": "Add a bill",
   "formTitleEdit": "Edit bill",
   "formName": "Name",
@@ -82,11 +151,23 @@
   "settingsOpenAndroid": "Open Android settings",
   "settingsScanNow": "Scan inbox again",
   "settingsScanResult": "{count, plural, =0{No new bills found} =1{1 new bill found} other{{count} new bills found}}",
-  "@settingsScanResult": {"placeholders": {"count": {"type": "int"}}},
+  "@settingsScanResult": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "settingsRemindersSection": "Reminders",
   "settingsRemindBefore": "Remind me",
   "settingsDaysBefore": "{days, plural, =0{On the due day} =1{1 day before} other{{days} days before}}",
-  "@settingsDaysBefore": {"placeholders": {"days": {"type": "int"}}},
+  "@settingsDaysBefore": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
   "settingsReminderTime": "Reminder time",
   "settingsNotificationsOff": "Notifications are off for DueDay, so reminders can't be shown.",
   "settingsNotificationsAllow": "Allow notifications",
@@ -99,7 +180,13 @@
   "settingsDeleted": "All data deleted",
   "cancel": "Cancel",
   "settingsAbout": "DueDay {version} · open source (MIT)",
-  "@settingsAbout": {"placeholders": {"version": {"type": "String"}}},
+  "@settingsAbout": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
   "onboardingTitle": "Never miss a due date",
   "onboardingBody": "DueDay finds bills in the SMS your bank, card, electricity board, telco and insurer already send you, and reminds you before they're due.",
   "onboardingReadsTitle": "What it reads",
@@ -113,18 +200,89 @@
   "onboardingDeniedNote": "No problem: you can add bills by hand and turn on SMS reading later in Settings.",
   "notifChannelName": "Bill reminders",
   "notifChannelDescription": "Reminders before a bill is due",
-  "notifNewChannelName": "New bills",
-  "notifNewChannelDescription": "When a bill SMS arrives",
+  "notifNewChannelName": "New and paid bills",
+  "notifNewChannelDescription": "When a bill SMS or a payment confirmation arrives",
   "notifDueTitle": "{name}: {amount}",
-  "@notifDueTitle": {"placeholders": {"name": {"type": "String"}, "amount": {"type": "String"}}},
+  "@notifDueTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "notifDueToday": "{kind} is due today",
-  "@notifDueToday": {"placeholders": {"kind": {"type": "String"}}},
+  "@notifDueToday": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
   "notifDueTomorrow": "{kind} is due tomorrow ({date})",
-  "@notifDueTomorrow": {"placeholders": {"kind": {"type": "String"}, "date": {"type": "String"}}},
+  "@notifDueTomorrow": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "notifDueInDays": "{kind} is due in {days} days ({date})",
-  "@notifDueInDays": {"placeholders": {"kind": {"type": "String"}, "days": {"type": "int"}, "date": {"type": "String"}}},
+  "@notifDueInDays": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      },
+      "days": {
+        "type": "int"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "notifNewBillTitle": "New bill: {name}",
-  "@notifNewBillTitle": {"placeholders": {"name": {"type": "String"}}},
+  "@notifNewBillTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "notifNewBillBody": "{kind} {amount}, due {date}. You'll be reminded before then.",
-  "@notifNewBillBody": {"placeholders": {"kind": {"type": "String"}, "amount": {"type": "String"}, "date": {"type": "String"}}}
+  "@notifNewBillBody": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "String"
+      },
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "notifPaidTitle": "Paid: {name}",
+  "@notifPaidTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "notifPaidBody": "{kind} marked as paid from the payment SMS. Its reminders are off.",
+  "@notifPaidBody": {
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
+  },
+  "billPaidFromSmsHelp": "Marked paid from the payment confirmation SMS. Tap \"Mark as unpaid\" if that was a different bill."
 }

@@ -898,7 +898,7 @@ const List<IgnoredCase> ignoredCorpus = [
     IgnoreReason.promotion,
   ),
 
-  // ── Transaction alerts and payment confirmations ──────────────────────
+  // ── Transaction alerts ──────────────────────────────────────────────
   IgnoredCase(
     'VM-HDFCBK',
     '2026-10-12 10:00',
@@ -912,34 +912,6 @@ const List<IgnoredCase> ignoredCorpus = [
     'Your A/c XX1234 is debited by Rs.500.00 on 12Oct26 towards UPI ref '
         '629912345678. If not you, call 1800111109.',
     IgnoreReason.notABill,
-  ),
-  IgnoredCase(
-    'VM-HDFCBK',
-    '2026-10-20 10:00',
-    'Payment of Rs.24,816.50 has been received towards your HDFC Bank '
-        'Credit Card XX4417 on 20-Oct-26. Thank you.',
-    IgnoreReason.paymentConfirmation,
-  ),
-  IgnoredCase(
-    'VM-AIRTEL',
-    '2026-10-20 10:00',
-    'Thank you for the payment of Rs 599.00 for your Airtel postpaid '
-        '98XXXXXX21. Your next bill date is 10-Nov-26.',
-    IgnoreReason.paymentConfirmation,
-  ),
-  IgnoredCase(
-    'JD-JIOINF',
-    '2026-10-29 10:00',
-    'Recharge of Rs 349 successful for 70XXXXXX56. Plan valid till '
-        '26-Nov-26.',
-    IgnoreReason.paymentConfirmation,
-  ),
-  IgnoredCase(
-    'VM-HDFCBK',
-    '2026-10-07 10:00',
-    'EMI of Rs.32,450 for HDFC Bank Home Loan A/c XXXXXXX5521 has been '
-        'debited on 07-Oct-26.',
-    IgnoreReason.paymentConfirmation,
   ),
 
   // ── Other service messages ────────────────────────────────────────────

@@ -38,7 +38,8 @@ Open the file on your phone and allow installing from your browser or file manag
 2. It reads the last 120 days of your inbox, but **only messages from business sender IDs** like `VM-HDFCBK` or `JD-AIRTEL-S`. Messages from people, phone numbers and promotional `-P` headers are skipped before their text is read.
 3. A parser on the phone pulls out the bill type, company, last digits of the card/account/phone, total and minimum due, and the due date. Statements, "due in 3 days" reminders and "due tomorrow" messages for the same bill are merged into one.
 4. New bill SMS are picked up as they arrive, even when the app is closed, and you get a "New bill" notification.
-5. You get reminders **3 days before, 1 day before and on the due day** at 9:00 (change the days and time in Settings). Mark a bill as paid and its reminders stop.
+5. You get reminders **3 days before, 1 day before and on the due day** at 9:00 (change the days and time in Settings).
+6. When a payment confirmation arrives ("Payment of Rs.24,816.50 received towards your Credit Card XX4417", "EMI debited", "Recharge successful"), the matching bill is **marked as paid automatically** and its reminders stop. You can also mark bills paid yourself, or undo an automatic match.
 
 The home screen shows what's left to pay this month, overdue bills first, then everything coming up.
 
@@ -60,15 +61,19 @@ Senders not in the list still work when the message says what it is ("electricit
 
 It understands `Rs.`, `Rs`, `INR` and `₹`, Indian grouping like `1,23,456.00`, and dates like `05-Nov-26`, `05/11/2026`, `05.11.2026`, `05NOV26`, `5th Nov`, `Nov 5, 2026`, `2026-11-05`, "today", "tomorrow" and "in 3 days". A date without a year gets the year that makes sense ("5th Jan" in December means next January).
 
-OTPs, promotions ("pre-approved", "apply now", cashback offers), spend and debit alerts, payment confirmations and service messages are not bills and are ignored.
+OTPs, promotions ("pre-approved", "apply now", cashback offers), spend and debit alerts, money received from people and service messages are not bills and are ignored.
+
+### Automatic "paid"
+
+A payment SMS marks a bill paid only when it's from the same company, for the same kind of bill (a loan EMI debit never settles a card bill), the account digits don't contradict each other, it arrives no later than 30 days after the due date, and the amount is at least the minimum due (or the full amount when there's no minimum). If several bills match, the one due soonest is paid. Bills you typed in yourself are never marked paid automatically.
 
 Something not recognised? [Open an issue](https://github.com/ChandraChaan/bill-due-reminder/issues) with the message **rewritten with fake numbers** (never paste a real SMS with your card or account number).
 
 ## How accurate is it?
 
-The parser is tested against **114 synthetic messages** written in the style of real Indian bank, biller and telco SMS: 81 bills of every type above and 33 that must be ignored (OTPs, promotions, personal messages, spend alerts, payment confirmations). All of them pass.
+The parser is tested against **124 synthetic messages** written in the style of real Indian bank, biller and telco SMS: 81 bills of every type above, 14 payment confirmations, and 29 that must be ignored (OTPs, promotions, personal messages, spend alerts, money received from people). All of them pass.
 
-That corpus was also used to tune the parser, so it flatters it. To get a fairer number, 24 of those messages were written *after* tuning, in phrasings the parser hadn't seen: it got **22 of 24 right on the first try** (both misses are now fixed and kept as tests). Expect the occasional miss with an unusual sender, and use **Add bill** for anything it doesn't catch.
+That corpus was also used to tune the parser, so it flatters it. To get a fairer number, 24 of those messages were written *after* tuning, in phrasings the parser hadn't seen: it got **22 of 24 right on the first try** (both misses are now fixed and kept as tests). The 14 payment confirmations were written before the payment matching existed; 13 of 14 parsed on the first run. Expect the occasional miss with an unusual sender, and use **Add bill** for anything it doesn't catch.
 
 ## The SMS permission
 
@@ -99,7 +104,7 @@ DueDay is a Flutter app with a small Kotlin layer for SMS. Pull requests are wel
 
 | Layer | What it does |
 | --- | --- |
-| [`packages/sms_bill_parser`](packages/sms_bill_parser) | Pure Dart, no Flutter: sender filter, amount/date/account extraction, the bill parser, and `BillBook`, which merges repeated reminders and tracks paid bills. Can be used on its own. |
+| [`packages/sms_bill_parser`](packages/sms_bill_parser) | Pure Dart, no Flutter: sender filter, amount/date/account extraction, the bill and payment parser, and `BillBook`, which merges repeated reminders and matches payments to bills. Can be used on its own. |
 | `SenderFilter`, `SmsBridge`, `SmsReceiver` (Kotlin) | Permission request, inbox query (business senders only), and the `SMS_RECEIVED` receiver. |
 | `BackgroundSync` (Kotlin) + `smsBackgroundMain` (Dart) | When a bill SMS arrives and the app isn't open, starts a headless Flutter engine that reads it, saves the bill, schedules its reminders and shuts down. |
 | `lib/features/bills/domain` | `BillService` (scan, ingest, save, reschedule), the reminder planner, repository interfaces. |

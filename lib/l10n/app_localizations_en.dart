@@ -385,10 +385,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get notifChannelDescription => 'Reminders before a bill is due';
 
   @override
-  String get notifNewChannelName => 'New bills';
+  String get notifNewChannelName => 'New and paid bills';
 
   @override
-  String get notifNewChannelDescription => 'When a bill SMS arrives';
+  String get notifNewChannelDescription =>
+      'When a bill SMS or a payment confirmation arrives';
 
   @override
   String notifDueTitle(String name, String amount) {
@@ -419,4 +420,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String notifNewBillBody(String kind, String amount, String date) {
     return '$kind $amount, due $date. You\'ll be reminded before then.';
   }
+
+  @override
+  String notifPaidTitle(String name) {
+    return 'Paid: $name';
+  }
+
+  @override
+  String notifPaidBody(String kind) {
+    return '$kind marked as paid from the payment SMS. Its reminders are off.';
+  }
+
+  @override
+  String get billPaidFromSmsHelp =>
+      'Marked paid from the payment confirmation SMS. Tap \"Mark as unpaid\" if that was a different bill.';
 }
