@@ -1,0 +1,14 @@
+name: sms_bill_parser
+description: >-
+  Extracts bill due dates and amounts from Indian bank, card, utility and
+  telecom SMS. Pure Dart, no Flutter, no network.
+version: 1.0.0
+publish_to: none
+repository: https://github.com/ChandraChaan/bill-due-reminder/tree/main/packages/sms_bill_parser
+
+environment:
+  sdk: ^3.12.0
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.6

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A calendar page with a bell: "reminded before the due date".
+     Drawn inside the 66dp safe zone of the 108dp adaptive icon. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Page -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M34,32h40a6,6 0,0 1,6 6v34a6,6 0,0 1,-6 6H34a6,6 0,0 1,-6 -6V38a6,6 0,0 1,6 -6z" />
+    <!-- Header band -->
+    <path
+        android:fillColor="#C8EBDD"
+        android:pathData="M34,32h40a6,6 0,0 1,6 6v6H28v-6a6,6 0,0 1,6 -6z" />
+    <!-- Rings -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M40,26h4v12h-4zM64,26h4v12h-4z" />
+    <!-- Bell -->
+    <path
+        android:fillColor="#16705B"
+        android:pathData="M54,48c-5.5,0 -9,4.2 -9,9.5v6.5l-3,3v1.5h24v-1.5l-3,-3v-6.5c0,-5.3 -3.5,-9.5 -9,-9.5zM50.5,70a3.5,3.5 0,0 0,7 0z" />
+</vector>
