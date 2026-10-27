@@ -40,6 +40,9 @@ abstract interface class ReminderScheduler {
   /// Shows "new bill found" right away.
   Future<void> announceNewBills(List<TrackedBill> bills);
 
+  /// Shows "marked as paid" for bills a payment SMS settled.
+  Future<void> announcePaid(List<TrackedBill> bills);
+
   Future<bool> notificationsAllowed();
   Future<bool> requestPermission();
   Future<void> cancelAll();

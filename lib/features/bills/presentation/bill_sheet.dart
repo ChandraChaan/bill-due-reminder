@@ -83,6 +83,10 @@ class BillSheet extends ConsumerWidget {
               ].join(' · '),
               style: theme.textTheme.bodySmall,
             ),
+            if (bill.paidBy == PaidBy.sms) ...[
+              const SizedBox(height: 12),
+              Text(l10n.billPaidFromSmsHelp, style: theme.textTheme.bodySmall),
+            ],
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,

@@ -170,6 +170,34 @@ final class BillNotice extends ParsedSms {
       'due: $amountDue, min: $minimumDue, on: $dueDate)';
 }
 
+/// The SMS confirms that a bill was paid: a card payment received, an EMI
+/// debited, a bill payment or recharge that went through.
+final class PaymentNotice extends ParsedSms {
+  const PaymentNotice({
+    required this.kind,
+    required this.issuer,
+    required this.receivedAt,
+    this.accountRef,
+    this.amount,
+  });
+
+  final BillKind kind;
+  final Issuer issuer;
+
+  /// Last digits of the card, loan, consumer or phone number paid for.
+  final String? accountRef;
+
+  /// Amount paid in paise, when the SMS says.
+  final int? amount;
+
+  final DateTime receivedAt;
+
+  @override
+  String toString() =>
+      'PaymentNotice(${kind.name}, ${issuer.id}, ref: $accountRef, '
+      'paid: $amount)';
+}
+
 /// Why an SMS did not produce a bill.
 enum IgnoreReason {
   /// Not a bank/biller header (a phone number, or a promotional `-P` header).
@@ -178,7 +206,7 @@ enum IgnoreReason {
   otp,
   promotion,
 
-  /// Confirms a payment rather than asking for one.
+  /// Confirms a payment, but it isn't clear for what kind of bill.
   paymentConfirmation,
   notABill,
   noDueDate,

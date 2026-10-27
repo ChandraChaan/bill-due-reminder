@@ -16,6 +16,16 @@ BillNotice _notice(String sender, String received, String body) =>
 BillBook _read(List<BillNotice> notices) =>
     notices.fold(BillBook(), (book, n) => book.addNotice(n));
 
+PaymentNotice _payment(String sender, String received, String body) =>
+    _parser.parse(
+          SmsInput(
+            sender: sender,
+            body: body,
+            receivedAt: DateTime.parse(received),
+          ),
+        )
+        as PaymentNotice;
+
 void main() {
   final statement = _notice(
     'VM-HDFCBK',
@@ -204,5 +214,124 @@ void main() {
     expect(billIdFor(statement), billIdFor(reminder), reason: 'same bill');
     expect(billIdFor(statement), isNot(billIdFor(dueTomorrow)));
     expect(billIdFor(statement), startsWith('sms-'));
+  });
+
+  group('paid by SMS', () {
+    PaymentNotice cardPayment(String amount, {String card = '4417'}) =>
+        _payment(
+          'VM-HDFCBK',
+          '2026-10-28 10:00',
+          'Payment of Rs.$amount has been received towards your HDFC Bank '
+              'Credit Card XX$card. Thank you.',
+        );
+
+    test('a payment for the full amount marks the bill paid', () {
+      final book = _read([statement]).applyPayment(cardPayment('24,816.50'));
+      final bill = book.bills.single;
+      expect(bill.isPaid, isTrue);
+      expect(bill.paidBy, PaidBy.sms);
+      expect(bill.paidAt, DateTime.parse('2026-10-28 10:00').toUtc());
+    });
+
+    test('paying at least the minimum due counts', () {
+      expect(
+        _read([statement]).applyPayment(cardPayment('1,240.00')).upcoming,
+        isEmpty,
+      );
+    });
+
+    test('paying less than the minimum does not', () {
+      expect(
+        _read([statement]).applyPayment(cardPayment('500.00')).upcoming,
+        hasLength(1),
+      );
+    });
+
+    test('a payment to another card does not', () {
+      expect(
+        _read([
+          statement,
+        ]).applyPayment(cardPayment('24,816.50', card: '9001')).upcoming,
+        hasLength(1),
+      );
+    });
+
+    test('a loan EMI debit does not pay the card bill', () {
+      final emi = _payment(
+        'VM-HDFCBK',
+        '2026-10-28 10:00',
+        'EMI of Rs.32,450 for HDFC Bank Home Loan A/c XXXXXXX4417 has been '
+            'debited.',
+      );
+      expect(_read([statement]).applyPayment(emi).upcoming, hasLength(1));
+    });
+
+    test('the oldest unpaid bill of the account is paid first', () {
+      final next = _notice(
+        'VM-HDFCBK',
+        '2026-11-16 10:00',
+        'HDFC Bank Credit Card ending 4417: Total Amt Due Rs.5,000.00, Due by '
+            '04-Dec-26.',
+      );
+      final payment = _payment(
+        'VM-HDFCBK',
+        '2026-11-20 10:00',
+        'Payment of Rs.5,000.00 has been received towards your HDFC Bank '
+            'Credit Card XX4417.',
+      );
+      final book = _read([statement, next]).applyPayment(payment);
+      expect(book.upcoming.single.dueDate, const CalendarDate(2026, 12, 4));
+    });
+
+    test('a payment long after the due date is not matched', () {
+      final late = _payment(
+        'VM-HDFCBK',
+        '2026-12-20 10:00',
+        'Payment of Rs.24,816.50 has been received towards your HDFC Bank '
+            'Credit Card XX4417.',
+      );
+      expect(_read([statement]).applyPayment(late).upcoming, hasLength(1));
+    });
+
+    test('a payment with no amount still matches', () {
+      final payment = _payment(
+        'JD-JIOINF',
+        '2026-10-29 10:00',
+        'Recharge successful for 70XXXXXX56. Enjoy your plan.',
+      );
+      final expiry = _notice(
+        'JD-JIOINF-S',
+        '2026-10-26 09:00',
+        'Your Jio plan for 70XXXXXX56 will expire on 29-Oct-26. Recharge now.',
+      );
+      expect(_read([expiry]).applyPayment(payment).upcoming, isEmpty);
+    });
+
+    test('bills typed in by hand are never marked paid by SMS', () {
+      final manual = TrackedBill(
+        id: 'm-1',
+        kind: BillKind.creditCard,
+        issuerId: 'hdfc',
+        name: 'HDFC card',
+        accountRef: '4417',
+        amountDue: 2481650,
+        dueDate: const CalendarDate(2026, 11, 4),
+        source: BillSource.manual,
+        firstSeenAt: DateTime.utc(2026, 10, 16),
+        lastSeenAt: DateTime.utc(2026, 10, 16),
+      );
+      expect(
+        BillBook([manual]).applyPayment(cardPayment('24,816.50')).upcoming,
+        hasLength(1),
+      );
+    });
+
+    test('a later reminder for a bill paid by SMS keeps it paid', () {
+      final book = _read([
+        statement,
+      ]).applyPayment(cardPayment('24,816.50')).addNotice(reminder);
+      expect(book.bills.single.isPaid, isTrue);
+      expect(book.bills.single.paidBy, PaidBy.sms);
+    });
   });
 }

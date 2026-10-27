@@ -11,5 +11,8 @@ First release.
 - Reminders 3 days before, 1 day before and on the due day (adjustable).
 - Upcoming list with this month's total; mark as paid; add bills by hand,
   with monthly repeat.
+- Bills are marked paid automatically when a matching payment confirmation
+  SMS arrives (card payment received, EMI debited, bill paid, recharge
+  successful).
 - Works without SMS access as a manual bill list.
 - No internet permission. Delete all data from Settings.

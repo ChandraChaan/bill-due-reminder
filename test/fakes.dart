@@ -72,6 +72,7 @@ final class FakeSms implements SmsSource {
 final class FakeReminders implements ReminderScheduler {
   List<PlannedReminder> scheduled = [];
   List<TrackedBill> announced = [];
+  List<TrackedBill> announcedPaid = [];
   bool allowed = true;
   bool cancelled = false;
 
@@ -82,6 +83,10 @@ final class FakeReminders implements ReminderScheduler {
   @override
   Future<void> announceNewBills(List<TrackedBill> bills) async =>
       announced.addAll(bills);
+
+  @override
+  Future<void> announcePaid(List<TrackedBill> bills) async =>
+      announcedPaid.addAll(bills);
 
   @override
   Future<bool> notificationsAllowed() async => allowed;

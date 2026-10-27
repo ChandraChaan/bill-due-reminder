@@ -200,25 +200,11 @@ const List<IgnoredCase> holdoutIgnored = [
     IgnoreReason.promotion,
   ),
   IgnoredCase(
-    'AD-ICICIB',
-    '2026-10-12 10:00',
-    'INR 8,412.00 credited to your ICICI Bank Credit Card XX9083 on '
-        '25-Oct-26. Thank you.',
-    IgnoreReason.paymentConfirmation,
-  ),
-  IgnoredCase(
     'VM-SBIINB',
     '2026-10-12 10:00',
     'Dear SBI user, 112233 is your OTP to complete the bill payment of Rs '
         '1,436. Do not share.',
     IgnoreReason.otp,
-  ),
-  IgnoredCase(
-    'VK-BESCOM',
-    '2026-10-12 10:00',
-    'BESCOM: Payment of Rs.1,436.00 for Account ID 7812345678 received on '
-        '20-10-2026. Thank you.',
-    IgnoreReason.paymentConfirmation,
   ),
   IgnoredCase(
     'JM-ZOMATO',

@@ -26,7 +26,7 @@ AppData sampleData() {
   }) => TrackedBill(
     id: id,
     kind: kind,
-    issuerId: name.toLowerCase(),
+    issuerId: name.split(' ').first.toLowerCase(),
     name: name,
     accountRef: ref,
     amountDue: amount,

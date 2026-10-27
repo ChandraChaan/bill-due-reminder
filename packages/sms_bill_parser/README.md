@@ -20,6 +20,8 @@ void main() {
     case BillNotice(:final issuer, :final amountDue, :final dueDate):
       print('${issuer.name}: $amountDue paise due $dueDate');
       // HDFC Bank: 2481650 paise due 2026-11-04
+    case PaymentNotice(:final issuer, :final amount):
+      print('${issuer.name}: paid $amount paise');
     case IgnoredSms(:final reason):
       print('not a bill: ${reason.name}');
   }
@@ -27,12 +29,12 @@ void main() {
 ```
 
 - `businessSenderId(sender)`: the privacy gate. Returns the sender ID for Indian business headers (`VM-HDFCBK`, `JD-AIRTEL-S`) and null for phone numbers, names and promotional `-P` headers. Check it before reading a message.
-- `BillSmsParser.parse`: returns a `BillNotice` (kind, issuer, last digits of the account, total and minimum due in paise, due date) or an `IgnoredSms` with the reason (OTP, promotion, payment confirmation, not a bill...). Never throws.
-- `BillBook`: an immutable list of `TrackedBill`s. `addNotice` merges a statement and its reminders into one bill; `markPaid` / `markUnpaid`, monthly repeats for typed-in bills, monthly totals, JSON.
+- `BillSmsParser.parse`: returns a `BillNotice` (kind, issuer, last digits of the account, total and minimum due in paise, due date), a `PaymentNotice` (a card payment received, EMI debited, bill paid, recharge done) or an `IgnoredSms` with the reason (OTP, promotion, not a bill...). Never throws.
+- `BillBook`: an immutable list of `TrackedBill`s. `addNotice` merges a statement and its reminders into one bill; `applyPayment` marks the matching bill paid; `markPaid` / `markUnpaid`, monthly repeats for typed-in bills, monthly totals, JSON.
 - `findAmounts`, `findDates`, `findAccountRef`: the building blocks, for `Rs.`/`INR`/`₹` amounts with Indian grouping and dates like `05-Nov-26`, `05/11/2026`, `5th Nov`, `Nov 5, 2026`, `tomorrow`.
 
 Money is always an `int` of paise. Dates are `CalendarDate` (no time zone).
 
 ## Tests
 
-`dart test` runs unit tests plus a corpus of 114 synthetic messages (`test/corpus/`) with the expected result for each. None of them is a real message.
+`dart test` runs unit tests plus a corpus of 124 synthetic messages (`test/corpus/`) with the expected result for each. None of them is a real message.

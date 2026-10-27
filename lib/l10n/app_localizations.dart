@@ -691,13 +691,13 @@ abstract class AppLocalizations {
   /// No description provided for @notifNewChannelName.
   ///
   /// In en, this message translates to:
-  /// **'New bills'**
+  /// **'New and paid bills'**
   String get notifNewChannelName;
 
   /// No description provided for @notifNewChannelDescription.
   ///
   /// In en, this message translates to:
-  /// **'When a bill SMS arrives'**
+  /// **'When a bill SMS or a payment confirmation arrives'**
   String get notifNewChannelDescription;
 
   /// No description provided for @notifDueTitle.
@@ -735,6 +735,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{kind} {amount}, due {date}. You\'ll be reminded before then.'**
   String notifNewBillBody(String kind, String amount, String date);
+
+  /// No description provided for @notifPaidTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid: {name}'**
+  String notifPaidTitle(String name);
+
+  /// No description provided for @notifPaidBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{kind} marked as paid from the payment SMS. Its reminders are off.'**
+  String notifPaidBody(String kind);
+
+  /// No description provided for @billPaidFromSmsHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Marked paid from the payment confirmation SMS. Tap \"Mark as unpaid\" if that was a different bill.'**
+  String get billPaidFromSmsHelp;
 }
 
 class _AppLocalizationsDelegate

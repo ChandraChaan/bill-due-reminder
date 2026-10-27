@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:bill_due_reminder/features/bills/domain/app_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:sms_bill_parser/sms_bill_parser.dart';
 
 import '../fakes.dart';
 import 'harness.dart';
@@ -108,6 +109,32 @@ void main() {
     await tester.tap(find.text('Undo'));
     await tester.pumpAndSettle();
     expect(store.saved!.book.byId('d'), isNotNull);
+  });
+
+  testWidgets('a payment SMS arriving while open marks the bill paid', (
+    tester,
+  ) async {
+    final smsSource = FakeSms();
+    final store = FakeStore(sampleData());
+    await pumpApp(tester, store: store, smsSource: smsSource);
+    await tester.pumpAndSettle();
+    smsSource.deliver(
+      sms(
+        'VM-HDFCBK',
+        '2026-10-27 09:00',
+        'Payment of Rs.24,816.50 has been received towards your HDFC Bank '
+            'Credit Card XX4417. Thank you.',
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(store.saved!.book.byId('c')!.paidBy, PaidBy.sms);
+    await tester.scrollUntilVisible(find.text('Paid · from SMS'), 300);
+    await tester.ensureVisible(find.text('Paid · from SMS'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Paid · from SMS'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('payment confirmation SMS'), findsOneWidget);
+    expect(find.text('Mark as unpaid'), findsOneWidget);
   });
 
   testWidgets('a bill SMS arriving while open shows up', (tester) async {

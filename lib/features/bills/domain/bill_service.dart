@@ -42,11 +42,11 @@ final class BillService {
     ];
     final result = ingestMessages(data, messages);
     final saved = await commit(result.data.copyWith(lastScanAt: now.toUtc()));
-    return IngestResult(saved, result.newBills);
+    return IngestResult(saved, result.newBills, result.paidBills);
   }
 
   /// Reads messages that arrived while the app was closed or in the
-  /// background and announces any new bill.
+  /// background, and announces new bills and bills a payment SMS settled.
   Future<IngestResult> handleArrived(AppData data) async {
     final arrived = await sms.takeArrived();
     if (arrived.isEmpty || !data.readSms) return IngestResult(data, const []);
@@ -57,7 +57,10 @@ final class BillService {
         if (!b.isPaid && !b.dueDate.isBefore(_today())) b,
     ];
     if (upcoming.isNotEmpty) await reminders.announceNewBills(upcoming);
-    return IngestResult(saved, result.newBills);
+    if (result.paidBills.isNotEmpty) {
+      await reminders.announcePaid(result.paidBills);
+    }
+    return IngestResult(saved, result.newBills, result.paidBills);
   }
 
   /// Saves [data] and reschedules every reminder to match it.
